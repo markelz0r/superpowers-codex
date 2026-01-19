@@ -282,6 +282,11 @@ These techniques are part of systematic debugging and available in this director
 - **`references/root-cause-tracing.md`** - Trace bugs backward through call stack to find original trigger
 - **`references/defense-in-depth.md`** - Add validation at multiple layers after finding root cause
 - **`references/condition-based-waiting.md`** - Replace arbitrary timeouts with condition polling
+- **`references/CREATION-LOG.md`** - Historical notes on how this skill was derived
+- **`references/test-academic.md`** - Academic validation scenario for the skill
+- **`references/test-pressure-1.md`** - Pressure test scenario 1
+- **`references/test-pressure-2.md`** - Pressure test scenario 2
+- **`references/test-pressure-3.md`** - Pressure test scenario 3
 
 **Related skills:**
 - **$test-driven-development** - For creating failing test case (Phase 4, Step 1)
