@@ -11,6 +11,7 @@ When you have multiple unrelated failures (different test files, different subsy
 
 **Core principle:** Dispatch one agent per independent problem domain. Let them work concurrently.
 
+**Codex note:** Codex does not support subagents. If you need parallelism, open separate Codex sessions and assign each task there. Otherwise, run tasks sequentially using the same scoping rules.
 ## When to Use
 
 ```dot
@@ -63,12 +64,11 @@ Each agent gets:
 
 ### 3. Dispatch in Parallel
 
-```typescript
-// In Claude Code / AI environment
-Task("Fix agent-tool-abort.test.ts failures")
-Task("Fix batch-completion-behavior.test.ts failures")
-Task("Fix tool-approval-race-conditions.test.ts failures")
-// All three run concurrently
+```text
+// In Codex, open separate sessions or run sequentially with the same scoping:
+Session A: Fix agent-tool-abort.test.ts failures
+Session B: Fix batch-completion-behavior.test.ts failures
+Session C: Fix tool-approval-race-conditions.test.ts failures
 ```
 
 ### 4. Review and Integrate

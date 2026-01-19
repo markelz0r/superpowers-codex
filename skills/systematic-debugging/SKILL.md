@@ -111,7 +111,7 @@ You MUST complete each phase before proceeding to the next.
 
    **WHEN error is deep in call stack:**
 
-   See `root-cause-tracing.md` in this directory for the complete backward tracing technique.
+   See `references/root-cause-tracing.md` in this directory for the complete backward tracing technique.
 
    **Quick version:**
    - Where does bad value originate?
@@ -176,7 +176,7 @@ You MUST complete each phase before proceeding to the next.
    - Automated test if possible
    - One-off test script if no framework
    - MUST have before fixing
-   - Use the `superpowers:test-driven-development` skill for writing proper failing tests
+   - Use the `$test-driven-development` skill for writing proper failing tests
 
 2. **Implement Single Fix**
    - Address the root cause identified
@@ -279,13 +279,18 @@ If systematic investigation reveals issue is truly environmental, timing-depende
 
 These techniques are part of systematic debugging and available in this directory:
 
-- **`root-cause-tracing.md`** - Trace bugs backward through call stack to find original trigger
-- **`defense-in-depth.md`** - Add validation at multiple layers after finding root cause
-- **`condition-based-waiting.md`** - Replace arbitrary timeouts with condition polling
+- **`references/root-cause-tracing.md`** - Trace bugs backward through call stack to find original trigger
+- **`references/defense-in-depth.md`** - Add validation at multiple layers after finding root cause
+- **`references/condition-based-waiting.md`** - Replace arbitrary timeouts with condition polling
+- **`references/CREATION-LOG.md`** - Historical notes on how this skill was derived
+- **`references/test-academic.md`** - Academic validation scenario for the skill
+- **`references/test-pressure-1.md`** - Pressure test scenario 1
+- **`references/test-pressure-2.md`** - Pressure test scenario 2
+- **`references/test-pressure-3.md`** - Pressure test scenario 3
 
 **Related skills:**
-- **superpowers:test-driven-development** - For creating failing test case (Phase 4, Step 1)
-- **superpowers:verification-before-completion** - Verify fix worked before claiming success
+- **$test-driven-development** - For creating failing test case (Phase 4, Step 1)
+- **$verification-before-completion** - Verify fix worked before claiming success
 
 ## Real-World Impact
 
