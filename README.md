@@ -1,6 +1,6 @@
 # Superpowers
 
-Superpowers is a complete software development workflow for your coding agents, built on top of a set of composable "skills" and some initial instructions that make sure your agent uses them.
+Superpowers is a complete software development workflow for your coding agents, built on top of a set of composable "skills" and some initial instructions that make sure your agent uses them. This repository is the native Codex implementation of Superpowers. If you are looking for the Claude Code version instead, see https://github.com/obra/superpowers.
 
 ## How it works
 
@@ -26,53 +26,13 @@ Thanks!
 
 ## Installation
 
-**Note:** Installation differs by platform. Claude Code has a built-in plugin system. Codex and OpenCode require manual setup.
-
-### Claude Code (via Plugin Marketplace)
-
-In Claude Code, register the marketplace first:
+Install with the Codex skill installer:
 
 ```bash
-/plugin marketplace add obra/superpowers-marketplace
+$skill-installer https://github.com/markelz0r/superpowers-codex
 ```
 
-Then install the plugin from this marketplace:
-
-```bash
-/plugin install superpowers@superpowers-marketplace
-```
-
-### Verify Installation
-
-Check that commands appear:
-
-```bash
-/help
-```
-
-```
-# Should see:
-# /superpowers:brainstorm - Interactive design refinement
-# /superpowers:write-plan - Create implementation plan
-# /superpowers:execute-plan - Execute plan in batches
-```
-
-### Codex
-
-Codex loads skills from `.codex/skills` automatically when you start in this repo.
-Use `/skills` or `$skill-name` (e.g., `$brainstorming`) to invoke them.
-
-**Detailed docs:** [docs/README.codex.md](docs/README.codex.md)
-
-### OpenCode
-
-Tell OpenCode:
-
-```
-Fetch and follow instructions from https://raw.githubusercontent.com/obra/superpowers/refs/heads/main/.opencode/INSTALL.md
-```
-
-**Detailed docs:** [docs/README.opencode.md](docs/README.opencode.md)
+Restart Codex to pick up the new skills.
 
 ## The Basic Workflow
 
@@ -125,7 +85,7 @@ Fetch and follow instructions from https://raw.githubusercontent.com/obra/superp
 - **Complexity reduction** - Simplicity as primary goal
 - **Evidence over claims** - Verify before declaring success
 
-Read more: [Superpowers for Claude Code](https://blog.fsck.com/2025/10/09/superpowers/)
+Claude Code version: https://github.com/obra/superpowers
 
 ## Contributing
 
@@ -140,10 +100,10 @@ See `skills/writing-skills/SKILL.md` for the complete guide.
 
 ## Updating
 
-Skills update automatically when you update the plugin:
+Re-run the installer to pull the latest skills:
 
 ```bash
-/plugin update superpowers
+$skill-installer https://github.com/markelz0r/superpowers-codex
 ```
 
 ## License
