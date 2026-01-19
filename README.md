@@ -1,3 +1,5 @@
+### [>> Claude Code version here <<](https://github.com/obra/superpowers)
+
 # Superpowers
 
 Superpowers is a complete software development workflow for your coding agents, built on top of a set of composable "skills" and some initial instructions that make sure your agent uses them. This repository is the native Codex implementation of Superpowers. If you are looking for the Claude Code version instead, see https://github.com/obra/superpowers.
@@ -13,16 +15,6 @@ After you've signed off on the design, your agent puts together an implementatio
 Next up, once you say "go", it launches a *subagent-driven-development* process, having agents work through each engineering task, inspecting and reviewing their work, and continuing forward. It's not uncommon for Claude to be able to work autonomously for a couple hours at a time without deviating from the plan you put together.
 
 There's a bunch more to it, but that's the core of the system. And because the skills trigger automatically, you don't need to do anything special. Your coding agent just has Superpowers.
-
-
-## Sponsorship
-
-If Superpowers has helped you do stuff that makes money and you are so inclined, I'd greatly appreciate it if you'd consider [sponsoring my opensource work](https://github.com/sponsors/obra).
-
-Thanks! 
-
-- Jesse
-
 
 ## Installation
 
@@ -85,8 +77,6 @@ Restart Codex to pick up the new skills.
 - **Complexity reduction** - Simplicity as primary goal
 - **Evidence over claims** - Verify before declaring success
 
-Claude Code version: https://github.com/obra/superpowers
-
 ## Contributing
 
 Skills live directly in this repository. To contribute:
@@ -114,3 +104,4 @@ MIT License - see LICENSE file for details
 
 - **Issues**: https://github.com/obra/superpowers/issues
 - **Marketplace**: https://github.com/obra/superpowers-marketplace
+
