@@ -59,11 +59,8 @@ Check that commands appear:
 
 ### Codex
 
-Tell Codex:
-
-```
-Fetch and follow instructions from https://raw.githubusercontent.com/obra/superpowers/refs/heads/main/.codex/INSTALL.md
-```
+Codex loads skills from `.codex/skills` automatically when you start in this repo.
+Use `/skills` or `$skill-name` (e.g., `$brainstorming`) to invoke them.
 
 **Detailed docs:** [docs/README.codex.md](docs/README.codex.md)
 
