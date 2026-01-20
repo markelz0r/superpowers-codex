@@ -1,6 +1,6 @@
 ---
 name: test-driven-development
-description: Use when implementing any feature or bugfix, before writing implementation code
+description: Use when implementing a feature or bugfix in a codebase with automated tests or where adding tests is in scope
 ---
 
 # Test-Driven Development (TDD)
@@ -15,20 +15,20 @@ Write the test first. Watch it fail. Write minimal code to pass.
 
 ## When to Use
 
-**Always:**
-- New features
-- Bug fixes
-- Refactoring
-- Behavior changes
+**Use when:**
+- New features or bug fixes in a codebase with an automated test harness
+- Behavior changes where adding tests is part of the scope (including adding the first test setup)
+- Refactoring when tests already exist or will be added as part of the change
 
-**Exceptions (ask your human partner):**
-- Throwaway prototypes
-- Generated code
-- Configuration files
+**Do NOT use when:**
+- The project has no automated test setup and adding one is explicitly out of scope for this task
+- Changes are purely documentation or data/config updates with no executable behavior
+- Throwaway prototypes or generated code (unless explicitly asked to test)
 
-Thinking "skip TDD just this once"? Stop. That's rationalization.
+If TDD does not apply, still verify behavior (manual checks or scripts) and document why tests were not added.
+Thinking "skip TDD just this once" when it DOES apply? Stop. That's rationalization.
 
-## The Iron Law
+## The Iron Law (When TDD Applies)
 
 ```
 NO PRODUCTION CODE WITHOUT A FAILING TEST FIRST
@@ -195,7 +195,9 @@ Keep tests green. Don't add behavior.
 
 Next failing test for next feature.
 
-## Good Tests
+## Quick Reference
+
+Good tests at a glance:
 
 | Quality | Good | Bad |
 |---------|------|-----|
@@ -253,6 +255,12 @@ Tests-first force edge case discovery before implementing. Tests-after verify yo
 
 30 minutes of tests after ≠ TDD. You get coverage, lose proof tests work.
 
+## Common Mistakes
+
+- Skipping the red verification step (test fails for the expected reason)
+- Packing multiple behaviors into a single test
+- Testing mocks instead of real behavior
+
 ## Common Rationalizations
 
 | Excuse | Reality |
@@ -267,9 +275,9 @@ Tests-first force edge case discovery before implementing. Tests-after verify yo
 | "Test hard = design unclear" | Listen to test. Hard to test = hard to use. |
 | "TDD will slow me down" | TDD faster than debugging. Pragmatic = test-first. |
 | "Manual test faster" | Manual doesn't prove edge cases. You'll re-test every change. |
-| "Existing code has no tests" | You're improving it. Add tests for existing code. |
+| "No test harness exists, so TDD is impossible" | If adding tests is in scope, add a minimal harness. If out of scope, document the constraint and verify manually. |
 
-## Red Flags - STOP and Start Over
+## Red Flags - STOP and Start Over (When TDD Applies)
 
 - Code before test
 - Test after implementation
@@ -324,7 +332,7 @@ PASS
 **REFACTOR**
 Extract validation for multiple fields if needed.
 
-## Verification Checklist
+## Verification Checklist (When TDD Applies)
 
 Before marking work complete:
 
@@ -350,9 +358,9 @@ Can't check all boxes? You skipped TDD. Start over.
 
 ## Debugging Integration
 
-Bug found? Write failing test reproducing it. Follow TDD cycle. Test proves fix and prevents regression.
+Bug found? When TDD applies, write a failing test reproducing it. Follow TDD cycle. Test proves fix and prevents regression.
 
-Never fix bugs without a test.
+If there's no test harness and adding one is out of scope, document the constraint and do manual or scripted verification.
 
 ## Testing Anti-Patterns
 
@@ -364,8 +372,8 @@ When adding mocks or test utilities, read references/testing-anti-patterns.md to
 ## Final Rule
 
 ```
-Production code → test exists and failed first
+When TDD applies: production code → test exists and failed first
 Otherwise → not TDD
 ```
 
-No exceptions without your human partner's permission.
+No exceptions within the TDD scope without your human partner's permission.
