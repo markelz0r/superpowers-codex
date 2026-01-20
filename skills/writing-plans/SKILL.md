@@ -33,7 +33,7 @@ Assume they are a skilled developer, but know almost nothing about our toolset o
 ```markdown
 # [Feature Name] Implementation Plan
 
-> **For Codex:** REQUIRED SUB-SKILL: Use $executing-plans to implement this plan task-by-task.
+> **For Codex:** REQUIRED SUB-SKILL: Use $subagent-driven-development to implement this plan task-by-task.
 
 **Goal:** [One sentence describing what this builds]
 
@@ -87,6 +87,35 @@ git commit -m "feat: add specific feature"
 ```
 ```
 
+## Quick Reference
+
+| Item | Must include |
+|------|--------------|
+| Plan header | Required sub-skill line, goal, architecture, tech stack |
+| Each task | Exact file paths, test steps, commands, commit |
+| Steps | One action each (2-5 minutes) |
+
+## Common Mistakes
+
+- Skipping exact file paths
+- Packing multiple actions into a single step
+- Missing test commands or expected output
+- Asking for workflow choice in Codex
+
+## Common Rationalizations
+
+| Excuse | Reality |
+|--------|---------|
+| "Details can go in the implementation" | Plans must be self-contained and executable. |
+| "This is obvious, no need for commands" | Explicit commands prevent mistakes and drift. |
+| "I'll ask which workflow later" | In Codex, default to sequential execution. |
+
+## Red Flags
+
+- Steps use vague verbs like "handle" or "update" without code/commands
+- Tasks cannot be completed in 2-5 minutes each
+- Missing a clear testing path for each task
+
 ## Remember
 - Exact file paths always
 - Complete code in plan (not "add validation")
@@ -96,21 +125,13 @@ git commit -m "feat: add specific feature"
 
 ## Execution Handoff
 
-After saving the plan, offer execution choice:
+After saving the plan, proceed without asking for a workflow choice in Codex.
 
-**"Plan complete and saved to `docs/plans/<filename>.md`. Two execution options:**
-
-**1. Subagent-Driven (this session)** - I dispatch fresh subagent per task, review between tasks, fast iteration
-
-**2. Parallel Session (separate)** - Open new session with executing-plans, batch execution with checkpoints
-
-**Which approach?"**
-
-**If Subagent-Driven chosen:**
+**For Codex (single session):**
 - **REQUIRED SUB-SKILL:** Use $subagent-driven-development
-- Stay in this session
-- Fresh subagent per task + code review
+- Execute tasks sequentially with self-review passes
+- Track progress in update_plan
 
-**If Parallel Session chosen:**
-- Guide them to open new session in the chosen workspace (worktree if used, otherwise current workspace)
-- **REQUIRED SUB-SKILL:** New session uses $executing-plans
+**If a separate session is required:**
+- Open a new session in the chosen workspace (worktree if used, otherwise current workspace)
+- **REQUIRED SUB-SKILL:** Use $executing-plans in that session
