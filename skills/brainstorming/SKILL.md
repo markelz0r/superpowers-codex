@@ -41,7 +41,10 @@ Start by understanding the current project context, then ask questions one at a 
 
 **Implementation (if continuing):**
 - Ask: "Ready to set up for implementation?"
-- Use $using-git-worktrees to create isolated workspace
+- Ask whether to use a worktree or stay in the current workspace.
+  - Recommend a worktree for higher-risk changes (multi-file refactors, migrations, dependency upgrades, or wide-scope features).
+- If user chooses a worktree (or risk is high), use $using-git-worktrees to create an isolated workspace.
+- If user prefers current workspace and risk is low, continue in place.
 - Use $writing-plans to create detailed implementation plan
 
 ## Key Principles
