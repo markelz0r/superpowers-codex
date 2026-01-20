@@ -1,20 +1,17 @@
-# Code Quality Reviewer Prompt Template
+# Code Quality Pass Checklist
 
-If subagents are unavailable, use this as a self-review checklist for code quality.
+Use this checklist to verify implementation quality (clean, tested, maintainable).
 
-**Purpose:** Verify implementation is well-built (clean, tested, maintainable)
-
-**Only dispatch after spec compliance review passes.**
+Run only after the spec compliance pass is ✅.
 
 ```
-Task tool ($code-reviewer, if available):
-  Use template at requesting-code-review/references/code-reviewer.md
+Use template at requesting-code-review/references/code-reviewer.md
 
-  WHAT_WAS_IMPLEMENTED: [from implementer's report]
-  PLAN_OR_REQUIREMENTS: Task N from [plan-file]
-  BASE_SHA: [commit before task]
-  HEAD_SHA: [current commit]
-  DESCRIPTION: [task summary]
+WHAT_WAS_IMPLEMENTED: [from implementer report]
+PLAN_OR_REQUIREMENTS: Task N from [plan-file]
+BASE_SHA: [commit before task]
+HEAD_SHA: [current commit]
+DESCRIPTION: [task summary]
 ```
 
-**Code reviewer returns:** Strengths, Issues (Critical/Important/Minor), Assessment
+Expected output: Strengths, Issues (Critical/Important/Minor), Assessment.
