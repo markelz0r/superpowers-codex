@@ -12,7 +12,7 @@ Run a structured code review to catch issues before they cascade. Use the templa
 ## When to Request Review
 
 **Mandatory:**
-- After each task in subagent-driven development
+- After each task in sequential execution (subagent-driven-development in Codex)
 - After completing major feature
 - Before merge to main
 
@@ -20,6 +20,14 @@ Run a structured code review to catch issues before they cascade. Use the templa
 - When stuck (fresh perspective)
 - Before refactoring (baseline check)
 - After fixing complex bug
+
+## Quick Reference
+
+| Step | Action | Output |
+|------|--------|--------|
+| Get SHAs | Identify base/head commits | Diff range |
+| Review | Use code review template | Strengths + issues |
+| Act | Fix Critical/Important issues | Updated code |
 
 ## How to Request
 
@@ -63,7 +71,7 @@ HEAD_SHA=$(git rev-parse HEAD)
   HEAD_SHA: 3df7661
   DESCRIPTION: Added verifyIndex() and repairIndex() with 4 issue types
 
-[Subagent returns]:
+[Self-review output]:
   Strengths: Clean architecture, real tests
   Issues:
     Important: Missing progress indicators
@@ -76,7 +84,7 @@ You: [Fix progress indicators]
 
 ## Integration with Workflows
 
-**Subagent-Driven Development:**
+**Subagent-Driven Development (Codex sequential):**
 - Review after EACH task
 - Catch issues before they compound
 - Fix before moving to next task
@@ -88,6 +96,20 @@ You: [Fix progress indicators]
 **Ad-Hoc Development:**
 - Review before merge
 - Review when stuck
+
+## Common Mistakes
+
+- Skipping reviews on "small" changes
+- Reviewing without reading the actual diff
+- Proceeding with unfixed Important issues
+
+## Common Rationalizations
+
+| Excuse | Reality |
+|--------|---------|
+| "It is a tiny change" | Small changes still regress. Review still required. |
+| "I already know it works" | Verification beats confidence. Check the diff. |
+| "I'll fix issues later" | Issues compound. Fix before moving on. |
 
 ## Red Flags
 
