@@ -1,17 +1,22 @@
-# Code Quality Pass Checklist
+# Code Quality Reviewer Prompt Template
 
-Use this checklist to verify implementation quality (clean, tested, maintainable).
+Use this template when dispatching a code quality reviewer subagent.
 
-Run only after the spec compliance pass is ✅.
+**Purpose:** Verify implementation is well-built (clean, tested, maintainable)
+
+**Only dispatch after spec compliance review passes.**
 
 ```
-Use template at requesting-code-review/references/code-reviewer.md
+spawn_agent (agent_type: general):
+  description: "Code quality review for Task N"
+  prompt: |
+    Use template at requesting-code-review/references/code-reviewer.md
 
-WHAT_WAS_IMPLEMENTED: [from implementer report]
-PLAN_OR_REQUIREMENTS: Task N from [plan-file]
-BASE_SHA: [commit before task]
-HEAD_SHA: [current commit]
-DESCRIPTION: [task summary]
+    WHAT_WAS_IMPLEMENTED: [from implementer's report]
+    PLAN_OR_REQUIREMENTS: Task N from [plan-file]
+    BASE_SHA: [commit before task]
+    HEAD_SHA: [current commit]
+    DESCRIPTION: [task summary]
 ```
 
-Expected output: Strengths, Issues (Critical/Important/Minor), Assessment.
+**Code reviewer returns:** Strengths, Issues (Critical/Important/Minor), Assessment

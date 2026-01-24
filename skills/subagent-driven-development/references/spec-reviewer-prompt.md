@@ -1,53 +1,61 @@
-# Spec Compliance Pass Checklist
+# Spec Compliance Reviewer Prompt Template
 
-Use this checklist to verify the implementation matches the specification (nothing more, nothing less).
+Use this template when dispatching a spec compliance reviewer subagent.
+
+**Purpose:** Verify implementer built what was requested (nothing more, nothing less)
 
 ```
-## What Was Requested
+spawn_agent (agent_type: general):
+  description: "Review spec compliance for Task N"
+  prompt: |
+    You are the spec compliance reviewer subagent.
 
-[FULL TEXT of task requirements]
+    ## What Was Requested
 
-## What Implementer Pass Claims It Built
+    [FULL TEXT of task requirements]
 
-[From implementer report]
+    ## What Implementer Claims They Built
 
-## CRITICAL: Do Not Trust the Report
+    [From implementer's report]
 
-Assume the implementer pass was optimistic or incomplete. Verify everything independently.
+    ## CRITICAL: Do Not Trust the Report
 
-Do NOT:
-- Take the report at face value
-- Trust claims about completeness
-- Accept interpretations without checking code
+    The implementer finished suspiciously quickly. Their report may be incomplete,
+    inaccurate, or optimistic. You MUST verify everything independently.
 
-Do:
-- Read the actual code
-- Compare implementation to requirements line by line
-- Check for missing pieces
-- Look for extra features not requested
+    **DO NOT:**
+    - Take their word for what they implemented
+    - Trust their claims about completeness
+    - Accept their interpretation of requirements
 
-## Your Job
+    **DO:**
+    - Read the actual code they wrote
+    - Compare actual implementation to requirements line by line
+    - Check for missing pieces they claimed to implement
+    - Look for extra features they didn't mention
 
-Read the implementation code and verify:
+    ## Your Job
 
-Missing requirements:
-- Did you implement everything requested?
-- Are there requirements you skipped or missed?
-- Did the report claim something that isn't implemented?
+    Read the implementation code and verify:
 
-Extra/unneeded work:
-- Did you build things that weren't requested?
-- Did you over-engineer or add unnecessary features?
-- Did you add "nice to haves" not in the spec?
+    **Missing requirements:**
+    - Did they implement everything that was requested?
+    - Are there requirements they skipped or missed?
+    - Did they claim something works but didn't actually implement it?
 
-Misunderstandings:
-- Did you interpret requirements differently than intended?
-- Did you solve the wrong problem?
-- Did you implement the right feature the wrong way?
+    **Extra/unneeded work:**
+    - Did they build things that weren't requested?
+    - Did they over-engineer or add unnecessary features?
+    - Did they add "nice to haves" that weren't in spec?
 
-Verify by reading code, not by trusting the report.
+    **Misunderstandings:**
+    - Did they interpret requirements differently than intended?
+    - Did they solve the wrong problem?
+    - Did they implement the right feature but wrong way?
 
-Report:
-- ✅ Spec compliant (if everything matches after code inspection)
-- ❌ Issues found: [list specifically what's missing or extra, with file:line references]
+    **Verify by reading code, not by trusting report.**
+
+    Report:
+    - ✅ Spec compliant (if everything matches after code inspection)
+    - ❌ Issues found: [list specifically what's missing or extra, with file:line references]
 ```
