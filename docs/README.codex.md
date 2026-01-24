@@ -47,7 +47,7 @@ If you prefer a UI-driven install, ask Codex to use `$skill-installer` to pull s
 Some skills reference tools from other agents. In Codex:
 
 - `TodoWrite` → `update_plan`
-- Subagents are not available; follow the same steps manually
+- Subagents are supported; enable all `/experimental` features and use `spawn_agent`/`wait`/`send_input` for orchestration
 
 ## Updating
 

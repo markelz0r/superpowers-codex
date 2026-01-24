@@ -1,5 +1,14 @@
 # Superpowers Release Notes
 
+## v4.0.4 (2026-01-24)
+
+### Improvements
+
+**Codex subagent orchestration enabled**
+
+- `subagent-driven-development` now dispatches implementer/spec/quality subagents explicitly (Codex `spawn_agent`/`wait`/`send_input`)
+- Documentation updated to reflect Codex subagent support and required `/experimental` features
+
 ## v4.0.3 (2025-12-26)
 
 ### Improvements
@@ -221,7 +230,7 @@ Description changed to imperative: "You MUST use this before any creative work�
 - Personal skills override superpowers skills when names match
 - Clean skill display: shows name/description without raw frontmatter
 - Helpful context: shows supporting files directory for each skill
-- Tool mapping for Codex: TodoWrite→update_plan, subagents→manual fallback, etc.
+- Tool mapping for Codex: TodoWrite→update_plan, subagents were handled manually (pre-subagent support), etc.
 - Bootstrap integration with minimal AGENTS.md for automatic startup
 - Complete installation guide and bootstrap instructions specific to Codex
 

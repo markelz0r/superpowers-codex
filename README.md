@@ -26,6 +26,18 @@ $skill-installer https://github.com/markelz0r/superpowers-codex
 
 Restart Codex to pick up the new skills.
 
+## Experimental Features (Required for Subagents)
+
+For `subagent-driven-development` to function properly in Codex, enable **all** `/experimental` features:
+
+```
+› [x] Background terminal       Run long-running terminal commands in the background.
+  [x] Shell snapshot            Snapshot your shell environment to avoid re-running login scripts for every command.
+  [x] Powershell UTF-8 support  Enable UTF-8 output in Powershell.
+  [x] Multi-agents              Allow Codex to spawn and collaborate with other agents on request (formerly named `collab`).
+  [x] Steer conversation        Enter submits immediately; Tab queues messages when a task is running.
+```
+
 ## The Basic Workflow
 
 1. **brainstorming** - Activates before writing code. Refines rough ideas through questions, explores alternatives, presents design in sections for validation. Saves design document.
