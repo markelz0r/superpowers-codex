@@ -1,15 +1,15 @@
 ---
 name: subagent-driven-development
-description: Use when executing implementation plans sequentially in the current session with self-review gates
+description: Use when executing implementation plans with independent tasks in the current session
 ---
 
 # Subagent-Driven Development
 
-Execute plan sequentially per task with two-stage self-review: spec compliance first, then code quality.
+Execute plan by dispatching fresh subagent per task, with two-stage review after each: spec compliance review first, then code quality review.
 
-**Core principle:** Sequential implementer pass + two-stage review (spec then quality) = high quality, fast iteration
+**Core principle:** Fresh subagent per task + two-stage review (spec then quality) = high quality, fast iteration
 
-**Codex workflow:** Use this as a checklist with distinct self-review passes (implementer, spec compliance, code quality).
+**Codex workflow:** Orchestrate subagents with spawn_agent/wait/send_input using prompts in `./references/`.
 
 ## When to Use
 
@@ -33,9 +33,9 @@ digraph when_to_use {
 
 **vs. Executing Plans (parallel session):**
 - Same session (no context switch)
-- Sequential task execution with explicit self-review passes
+- Fresh subagent per task (no context pollution)
 - Two-stage review after each task: spec compliance first, then code quality
-- Faster iteration (no session handoff between tasks)
+- Faster iteration (no human-in-loop between tasks)
 
 ## The Process
 
@@ -45,64 +45,71 @@ digraph process {
 
     subgraph cluster_per_task {
         label="Per Task";
-        "Run implementer pass (./references/implementer-prompt.md)" [shape=box];
-        "Need clarification?" [shape=diamond];
-        "Clarify requirements, update context" [shape=box];
-        "Implementer pass: implement, test, commit, self-review" [shape=box];
-        "Run spec compliance pass (./references/spec-reviewer-prompt.md)" [shape=box];
-        "Spec compliance pass approves?" [shape=diamond];
-        "Fix spec gaps" [shape=box];
-        "Run code quality pass (./references/code-quality-reviewer-prompt.md)" [shape=box];
-        "Code quality pass approves?" [shape=diamond];
-        "Fix quality issues" [shape=box];
+        "Dispatch implementer subagent (./references/implementer-prompt.md)" [shape=box];
+        "Implementer subagent asks questions?" [shape=diamond];
+        "Answer questions, provide context" [shape=box];
+        "Implementer subagent implements, tests, commits, self-reviews" [shape=box];
+        "Dispatch spec reviewer subagent (./references/spec-reviewer-prompt.md)" [shape=box];
+        "Spec reviewer subagent confirms code matches spec?" [shape=diamond];
+        "Implementer subagent fixes spec gaps" [shape=box];
+        "Dispatch code quality reviewer subagent (./references/code-quality-reviewer-prompt.md)" [shape=box];
+        "Code quality reviewer subagent approves?" [shape=diamond];
+        "Implementer subagent fixes quality issues" [shape=box];
         "Mark task complete in update_plan" [shape=box];
     }
 
     "Read plan, extract all tasks with full text, note context, create update_plan" [shape=box];
     "More tasks remain?" [shape=diamond];
-    "Run final code quality pass for entire implementation" [shape=box];
+    "Dispatch final code reviewer subagent for entire implementation" [shape=box];
     "Use $finishing-a-development-branch" [shape=box style=filled fillcolor=lightgreen];
 
-    "Read plan, extract all tasks with full text, note context, create update_plan" -> "Run implementer pass (./references/implementer-prompt.md)";
-    "Run implementer pass (./references/implementer-prompt.md)" -> "Need clarification?";
-    "Need clarification?" -> "Clarify requirements, update context" [label="yes"];
-    "Clarify requirements, update context" -> "Run implementer pass (./references/implementer-prompt.md)";
-    "Need clarification?" -> "Implementer pass: implement, test, commit, self-review" [label="no"];
-    "Implementer pass: implement, test, commit, self-review" -> "Run spec compliance pass (./references/spec-reviewer-prompt.md)";
-    "Run spec compliance pass (./references/spec-reviewer-prompt.md)" -> "Spec compliance pass approves?";
-    "Spec compliance pass approves?" -> "Fix spec gaps" [label="no"];
-    "Fix spec gaps" -> "Run spec compliance pass (./references/spec-reviewer-prompt.md)" [label="re-review"];
-    "Spec compliance pass approves?" -> "Run code quality pass (./references/code-quality-reviewer-prompt.md)" [label="yes"];
-    "Run code quality pass (./references/code-quality-reviewer-prompt.md)" -> "Code quality pass approves?";
-    "Code quality pass approves?" -> "Fix quality issues" [label="no"];
-    "Fix quality issues" -> "Run code quality pass (./references/code-quality-reviewer-prompt.md)" [label="re-review"];
-    "Code quality pass approves?" -> "Mark task complete in update_plan" [label="yes"];
+    "Read plan, extract all tasks with full text, note context, create update_plan" -> "Dispatch implementer subagent (./references/implementer-prompt.md)";
+    "Dispatch implementer subagent (./references/implementer-prompt.md)" -> "Implementer subagent asks questions?";
+    "Implementer subagent asks questions?" -> "Answer questions, provide context" [label="yes"];
+    "Answer questions, provide context" -> "Dispatch implementer subagent (./references/implementer-prompt.md)";
+    "Implementer subagent asks questions?" -> "Implementer subagent implements, tests, commits, self-reviews" [label="no"];
+    "Implementer subagent implements, tests, commits, self-reviews" -> "Dispatch spec reviewer subagent (./references/spec-reviewer-prompt.md)";
+    "Dispatch spec reviewer subagent (./references/spec-reviewer-prompt.md)" -> "Spec reviewer subagent confirms code matches spec?";
+    "Spec reviewer subagent confirms code matches spec?" -> "Implementer subagent fixes spec gaps" [label="no"];
+    "Implementer subagent fixes spec gaps" -> "Dispatch spec reviewer subagent (./references/spec-reviewer-prompt.md)" [label="re-review"];
+    "Spec reviewer subagent confirms code matches spec?" -> "Dispatch code quality reviewer subagent (./references/code-quality-reviewer-prompt.md)" [label="yes"];
+    "Dispatch code quality reviewer subagent (./references/code-quality-reviewer-prompt.md)" -> "Code quality reviewer subagent approves?";
+    "Code quality reviewer subagent approves?" -> "Implementer subagent fixes quality issues" [label="no"];
+    "Implementer subagent fixes quality issues" -> "Dispatch code quality reviewer subagent (./references/code-quality-reviewer-prompt.md)" [label="re-review"];
+    "Code quality reviewer subagent approves?" -> "Mark task complete in update_plan" [label="yes"];
     "Mark task complete in update_plan" -> "More tasks remain?";
-    "More tasks remain?" -> "Run implementer pass (./references/implementer-prompt.md)" [label="yes"];
-    "More tasks remain?" -> "Run final code quality pass for entire implementation" [label="no"];
-    "Run final code quality pass for entire implementation" -> "Use $finishing-a-development-branch";
+    "More tasks remain?" -> "Dispatch implementer subagent (./references/implementer-prompt.md)" [label="yes"];
+    "More tasks remain?" -> "Dispatch final code reviewer subagent for entire implementation" [label="no"];
+    "Dispatch final code reviewer subagent for entire implementation" -> "Use $finishing-a-development-branch";
 }
 ```
 
+## Codex Subagent Tools
+
+- Use `spawn_agent` to dispatch each subagent (generic agent_type; role defined in prompt).
+- Use `wait` to monitor until a subagent finishes.
+- Use `send_input` to answer questions or request fixes.
+- Close subagents only when their work is complete.
+
 ## Prompt Templates
 
-- `./references/implementer-prompt.md` - Implementer pass checklist
-- `./references/spec-reviewer-prompt.md` - Spec compliance self-review checklist
-- `./references/code-quality-reviewer-prompt.md` - Code quality self-review checklist
+- `./references/implementer-prompt.md` - Dispatch implementer subagent
+- `./references/spec-reviewer-prompt.md` - Dispatch spec compliance reviewer subagent
+- `./references/code-quality-reviewer-prompt.md` - Dispatch code quality reviewer subagent
 
 ## Quick Reference
 
 | Pass | Goal | Output |
 |------|------|--------|
-| Implementer pass | Implement task, tests, commit | Implementation + report |
-| Spec compliance pass | Validate requirements, no extras | ✅/❌ with file references |
-| Code quality pass | Review maintainability, tests | Issues list + assessment |
-| Final quality pass | Whole-change review | Ready-to-merge check |
+| Implementer subagent | Implement task, tests, commit | Implementation + report |
+| Spec compliance reviewer | Validate requirements, no extras | ✅/❌ with file references |
+| Code quality reviewer | Review maintainability, tests | Issues list + assessment |
+| Final code reviewer | Whole-change review | Ready-to-merge check |
 
 ## Example Workflow
 
 ```
-You: I'm using Subagent-Driven Development (sequential self-review passes) to execute this plan.
+You: I'm using Subagent-Driven Development to execute this plan.
 
 [Read plan file once: docs/plans/feature-plan.md]
 [Extract all 5 tasks with full text and context]
@@ -111,66 +118,66 @@ You: I'm using Subagent-Driven Development (sequential self-review passes) to ex
 Task 1: Hook installation script
 
 [Get Task 1 text and context (already extracted)]
-[Run implementer pass using the checklist]
+[Dispatch implementer subagent with full task text + context]
 
-Implementer pass: "Before I begin - should the hook be installed at user or system level?"
+Implementer: "Before I begin - should the hook be installed at user or system level?"
 
 You: "User level (~/.config/superpowers/hooks/)"
 
-Implementer pass: "Got it. Implementing now..."
-[Later] Implementer pass report:
+Implementer: "Got it. Implementing now..."
+[Later] Implementer:
   - Implemented install-hook command
   - Added tests, 5/5 passing
   - Self-review: Found I missed --force flag, added it
   - Committed
 
-[Run spec compliance pass]
-Spec compliance pass: ✅ Spec compliant - all requirements met, nothing extra
+[Dispatch spec compliance reviewer]
+Spec reviewer: ✅ Spec compliant - all requirements met, nothing extra
 
-[Get git SHAs, run code quality pass]
-Code quality pass: Strengths: Good test coverage, clean. Issues: None. Approved.
+[Get git SHAs, dispatch code quality reviewer]
+Code reviewer: Strengths: Good test coverage, clean. Issues: None. Approved.
 
 [Mark Task 1 complete]
 
 Task 2: Recovery modes
 
 [Get Task 2 text and context (already extracted)]
-[Run implementer pass using the checklist]
+[Dispatch implementer subagent with full task text + context]
 
-Implementer pass: [No questions, proceeds]
-Implementer pass report:
+Implementer: [No questions, proceeds]
+Implementer:
   - Added verify/repair modes
   - 8/8 tests passing
   - Self-review: All good
   - Committed
 
-[Run spec compliance pass]
-Spec compliance pass: ❌ Issues:
+[Dispatch spec compliance reviewer]
+Spec reviewer: ❌ Issues:
   - Missing: Progress reporting (spec says "report every 100 items")
   - Extra: Added --json flag (not requested)
 
-[Implementer pass fixes issues]
-Implementer pass: Removed --json flag, added progress reporting
+[Implementer fixes issues]
+Implementer: Removed --json flag, added progress reporting
 
-[Spec compliance pass reviews again]
-Spec compliance pass: ✅ Spec compliant now
+[Spec reviewer reviews again]
+Spec reviewer: ✅ Spec compliant now
 
-[Run code quality pass]
-Code quality pass: Strengths: Solid. Issues (Important): Magic number (100)
+[Dispatch code quality reviewer]
+Code reviewer: Strengths: Solid. Issues (Important): Magic number (100)
 
-[Implementer pass fixes]
-Implementer pass: Extracted PROGRESS_INTERVAL constant
+[Implementer fixes]
+Implementer: Extracted PROGRESS_INTERVAL constant
 
-[Code quality pass reviews again]
-Code quality pass: ✅ Approved
+[Code reviewer reviews again]
+Code reviewer: ✅ Approved
 
 [Mark Task 2 complete]
 
 ...
 
 [After all tasks]
-[Run final code quality pass]
-Final pass: All requirements met, ready to merge
+[Dispatch final code reviewer]
+Final reviewer: All requirements met, ready to merge
 
 Done!
 ```
@@ -178,8 +185,8 @@ Done!
 ## Advantages
 
 **vs. Manual execution:**
-- Explicit pass separation reduces context drift
-- Questions surfaced before work begins
+- Fresh context per task (no confusion)
+- Subagent can ask questions before and during work
 - Two-stage review catches spec and quality issues early
 - Works entirely in one Codex session
 
@@ -190,7 +197,7 @@ Done!
 
 **Efficiency gains:**
 - No cross-session handoff
-- Full task text captured once per task
+- Controller provides full task text (no plan-file reads)
 - Issues surfaced before moving on
 
 **Quality gates:**
@@ -201,7 +208,7 @@ Done!
 - Code quality ensures implementation is well-built
 
 **Cost:**
-- More review passes per task
+- More subagent invocations per task
 - Controller does more prep work (extracting all tasks upfront)
 - Review loops add iterations
 - But catches issues early (cheaper than debugging later)
@@ -211,6 +218,8 @@ Done!
 - Skipping spec compliance before code quality review
 - Moving to the next task with open review issues
 - Starting implementation with unclear requirements
+- Dispatching multiple implementer subagents in parallel
+- Making subagents read the plan file instead of providing full task text
 
 ## Common Rationalizations
 
@@ -220,14 +229,21 @@ Done!
 | "Spec is obvious, no need for spec pass" | Implementation drift is common. Verify against requirements. |
 | "Code quality can wait" | Later reviews miss context. Fix now while it's fresh. |
 | "It's a tiny change" | Small changes still regress. Review still required. |
+| "Subagents aren't available, I'll just do it myself" | If subagents are required, enable /experimental or pause. Manual fallback changes the workflow. |
+| "The implementer report is enough" | Spec reviewers must verify code, not trust reports. |
+| "We can skip the reviewer for this one task" | Skipping a single reviewer breaks the quality gate. |
+
+**Violating the letter of the rules is violating the spirit of the rules.**
 
 ## Red Flags
 
 **Never:**
 - Skip reviews (spec compliance OR code quality)
 - Proceed with unfixed issues
+- Skip dispatching required subagents (implementer or reviewers)
+- Dispatch multiple implementer subagents in parallel (conflicts)
 - Start multiple tasks at once (context bleed)
-- Skip pasting full task text into your working context
+- Make subagents read the plan file (provide full task text instead)
 - Skip scene-setting context (you need to know where the task fits)
 - Ignore questions or proceed with ambiguity
 - Accept "close enough" on spec compliance (spec compliance pass found issues = not done)
@@ -242,8 +258,8 @@ Done!
 - Don't rush them into implementation
 
 **If reviewer finds issues:**
-- Implementer pass fixes them
-- Review pass repeats
+- Implementer subagent fixes them
+- Reviewer re-checks the fix
 - Repeat until approved
 - Don't skip the re-review
 
@@ -254,7 +270,7 @@ Done!
 
 **Required workflow skills:**
 - **$writing-plans** - Creates the plan this skill executes
-- **$requesting-code-review** - Code review template for self-review passes
+- **$requesting-code-review** - Code review template for reviewer subagents
 - **$finishing-a-development-branch** - Complete development after all tasks
 
 **Use with:**
