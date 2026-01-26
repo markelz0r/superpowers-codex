@@ -5,7 +5,7 @@ description: Use when executing implementation plans with independent tasks in t
 
 # Subagent-Driven Development
 
-Execute plan by implementing each task in-thread and dispatching fresh reviewer subagents per task, with two-stage review after each: spec compliance review first, then code quality review.
+Execute plan by implementing each task in-thread and dispatching fresh reviewer subagents per substantial task, with two-stage review after each: spec compliance review first, then code quality review. Non-substantial administrative tasks skip reviewer subagents.
 
 **Core principle:** Main agent implements + reviewer subagents for spec then quality = high quality, fast iteration
 
@@ -34,8 +34,20 @@ digraph when_to_use {
 **vs. Executing Plans (parallel session):**
 - Same session (no context switch)
 - Fresh subagent per task (no context pollution)
-- Two-stage review after each task: spec compliance first, then code quality
+- Two-stage review after each substantial task: spec compliance first, then code quality
 - Faster iteration (no human-in-loop between tasks)
+
+## Task Triage: Substantial vs Non-Substantial
+
+**Substantial tasks (full two-stage review required):**
+- Any tracked file changes (`git status --porcelain` not empty)
+- Any changes to production code, tests, build/runtime config, dependencies, or user-facing behavior
+
+**Non-substantial tasks (no reviewer subagents):**
+- Administrative/setup steps with no tracked changes (branch creation, running commands, environment checks)
+- Coordination/reporting steps that do not modify the repo
+
+**If unsure, treat as substantial and run full reviews.**
 
 ## The Process
 
@@ -46,6 +58,8 @@ digraph process {
     subgraph cluster_per_task {
         label="Per Task";
         "Main agent implements task in-thread (edits, tests, self-checks)" [shape=box];
+        "Substantial task (tracked changes or behavior impact)?" [shape=diamond];
+        "Self-check + mark task complete (no reviewer subagents)" [shape=box];
         "Spawn spec reviewer subagent (./references/spec-reviewer-prompt.md)" [shape=box];
         "Spec reviewer subagent confirms code matches spec?" [shape=diamond];
         "Main agent fixes spec gaps" [shape=box];
@@ -57,11 +71,15 @@ digraph process {
 
     "Read plan, extract all tasks with full text, note context, create update_plan" [shape=box];
     "More tasks remain?" [shape=diamond];
+    "Any substantial changes in repo?" [shape=diamond];
     "Spawn final code quality reviewer subagent for entire implementation" [shape=box];
+    "Wrap up (report no tracked changes)" [shape=box];
     "Use $finishing-a-development-branch" [shape=box style=filled fillcolor=lightgreen];
 
     "Read plan, extract all tasks with full text, note context, create update_plan" -> "Main agent implements task in-thread (edits, tests, self-checks)";
-    "Main agent implements task in-thread (edits, tests, self-checks)" -> "Spawn spec reviewer subagent (./references/spec-reviewer-prompt.md)";
+    "Main agent implements task in-thread (edits, tests, self-checks)" -> "Substantial task (tracked changes or behavior impact)?";
+    "Substantial task (tracked changes or behavior impact)?" -> "Self-check + mark task complete (no reviewer subagents)" [label="no"];
+    "Substantial task (tracked changes or behavior impact)?" -> "Spawn spec reviewer subagent (./references/spec-reviewer-prompt.md)" [label="yes"];
     "Spawn spec reviewer subagent (./references/spec-reviewer-prompt.md)" -> "Spec reviewer subagent confirms code matches spec?";
     "Spec reviewer subagent confirms code matches spec?" -> "Main agent fixes spec gaps" [label="no"];
     "Main agent fixes spec gaps" -> "Spawn spec reviewer subagent (./references/spec-reviewer-prompt.md)" [label="re-review"];
@@ -71,8 +89,11 @@ digraph process {
     "Main agent fixes quality issues" -> "Spawn code quality reviewer subagent (./references/code-quality-reviewer-prompt.md)" [label="re-review"];
     "Code quality reviewer subagent approves?" -> "Mark task complete in update_plan" [label="yes"];
     "Mark task complete in update_plan" -> "More tasks remain?";
+    "Self-check + mark task complete (no reviewer subagents)" -> "More tasks remain?";
     "More tasks remain?" -> "Main agent implements task in-thread (edits, tests, self-checks)" [label="yes"];
-    "More tasks remain?" -> "Spawn final code quality reviewer subagent for entire implementation" [label="no"];
+    "More tasks remain?" -> "Any substantial changes in repo?" [label="no"];
+    "Any substantial changes in repo?" -> "Spawn final code quality reviewer subagent for entire implementation" [label="yes"];
+    "Any substantial changes in repo?" -> "Wrap up (report no tracked changes)" [label="no"];
     "Spawn final code quality reviewer subagent for entire implementation" -> "Use $finishing-a-development-branch";
 }
 ```
@@ -100,6 +121,11 @@ digraph process {
 | Spec compliance reviewer | Validate requirements, no extras | ✅/❌ with file references |
 | Code quality reviewer | Review maintainability, tests | Issues list + assessment |
 | Final code quality reviewer | Whole-change review | Ready-to-merge check |
+
+| Task Type | Review Requirement |
+|-----------|--------------------|
+| Non-substantial (no tracked changes) | No reviewer subagents; self-check then mark complete |
+| Substantial (any tracked changes/behavior impact) | Spec review then code quality review |
 
 ## Example Workflow
 
@@ -194,7 +220,7 @@ Done!
 
 **Quality gates:**
 - Self-review catches issues before handoff
-- Two-stage review: spec compliance, then code quality
+- Two-stage review for substantial tasks: spec compliance, then code quality
 - Review loops ensure fixes actually work
 - Spec compliance prevents over/under-building
 - Code quality ensures implementation is well-built
@@ -212,6 +238,7 @@ Done!
 - Starting implementation with unclear requirements
 - Dispatching reviewer subagents in parallel instead of sequentially
 - Making subagents read the plan file instead of providing full task text
+- Marking a task non-substantial despite tracked changes
 
 ## Common Rationalizations
 
@@ -220,7 +247,8 @@ Done!
 | "I'll review after all tasks" | Issues compound. Review after each task prevents rework. |
 | "Spec is obvious, no need for spec pass" | Implementation drift is common. Verify against requirements. |
 | "Code quality can wait" | Later reviews miss context. Fix now while it's fresh. |
-| "It's a tiny change" | Small changes still regress. Review still required. |
+| "It's a tiny change" | Tiny code changes still regress. If there are tracked changes, review is required. |
+| "No diff, so I can skip everything" | Only skip reviewers if `git status --porcelain` is clean and the task is purely administrative. |
 | "Reviewers aren't available, I'll just do it myself" | If subagents are required, enable /experimental or pause. Manual fallback changes the workflow. |
 | "My self-review is enough" | Reviewers must verify code, not trust reports. |
 | "We can skip the reviewer for this one task" | Skipping a single reviewer breaks the quality gate. |
@@ -230,9 +258,9 @@ Done!
 ## Red Flags
 
 **Never:**
-- Skip reviews (spec compliance OR code quality)
+- Skip reviews for substantial tasks (spec compliance OR code quality)
 - Proceed with unfixed issues
-- Skip dispatching required reviewer subagents (spec or quality)
+- Skip dispatching required reviewer subagents (spec or quality) when there are tracked changes
 - Dispatch reviewer subagents in parallel for the same task (conflicts)
 - Start multiple tasks at once (context bleed)
 - Make subagents read the plan file (provide full task text instead)
@@ -243,6 +271,7 @@ Done!
 - Let main-agent self-review replace actual review (both are needed)
 - **Start code quality review before spec compliance is ✅** (wrong order)
 - Move to next task while either review has open issues
+- Classify tasks with tracked changes as non-substantial to avoid reviews
 
 **If you have questions:**
 - Answer clearly and completely
@@ -264,6 +293,8 @@ Done!
 - **$writing-plans** - Creates the plan this skill executes
 - **$requesting-code-review** - Code review template for reviewer subagents
 - **$finishing-a-development-branch** - Complete development after all tasks
+
+If there are no tracked changes (all tasks were non-substantial), skip $finishing-a-development-branch and report completion.
 
 **Use with:**
 - **$test-driven-development** - Follow TDD per task when in scope
